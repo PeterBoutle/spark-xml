@@ -108,7 +108,13 @@ private[xml] object XmlFile {
         override def next: String = {
           if (iter.nonEmpty) {
             if (firstRow) {
-              indentingXmlWriter.writeStartElement(rootElementName)
+              if (options.header != null) {
+                writer.append(options.header)
+              }
+              if (!options.rootTag.isEmpty){
+               indentingXmlWriter.writeStartElement(options.rootTag)
+
+              }
               rootAttributes.foreach { case (k, v) =>
                 indentingXmlWriter.writeAttribute(k, v)
               }
@@ -127,7 +133,9 @@ private[xml] object XmlFile {
           } else {
             if (!firstRow) {
               lastRow = false
-              indentingXmlWriter.writeEndElement()
+              if (!options.rootTag.isEmpty) {
+                indentingXmlWriter.writeEndElement()
+              }
               indentingXmlWriter.close()
               writer.toString
             } else {
